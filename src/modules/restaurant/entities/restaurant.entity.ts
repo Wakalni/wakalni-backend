@@ -10,6 +10,7 @@ import {
   } from 'typeorm';
   import { User } from '../../user/entities/user.entity';
   import { OpeningHours } from './opening-hours.entity';
+  import { Ingredient } from 'src/modules/ingredient/entities/ingredient.entity';
   
   @Entity('restaurants')
   export class Restaurant {
@@ -48,6 +49,9 @@ import {
       cascade: true,
     })
     opening_hours: OpeningHours[];
+
+    @OneToMany(() => Ingredient, (ingredient) => ingredient.restaurant)
+    ingredients: Ingredient[];
   
     @CreateDateColumn({ type: 'timestamp' })
     created_at: Date;

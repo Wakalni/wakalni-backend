@@ -8,6 +8,8 @@ import { RestaurantModule } from './modules/restaurant/restaurant.module';
 import { TypeOrmModuleOptions } from '@nestjs/typeorm'
 import { Restaurant } from './modules/restaurant/entities/restaurant.entity'
 import { OpeningHours } from './modules/restaurant/entities/opening-hours.entity'
+import { Ingredient } from './modules/ingredient/entities/ingredient.entity'
+import { IngredientsModule } from './modules/ingredient/ingredient.module'
 
 @Module({
     imports: [
@@ -25,7 +27,7 @@ import { OpeningHours } from './modules/restaurant/entities/opening-hours.entity
                 username: configService.get('POSTGRES_USER'),
                 password: configService.get('POSTGRES_PASSWORD'),
                 database: configService.get('POSTGRES_DB'),
-                entities: [User, Restaurant, OpeningHours],
+                entities: [User, Restaurant, OpeningHours, Ingredient],
                 synchronize: configService.get('NODE_ENV') !== 'production',
                 logging: configService.get('NODE_ENV') !== 'production',
             }
@@ -35,6 +37,7 @@ import { OpeningHours } from './modules/restaurant/entities/opening-hours.entity
       UserModule,
       AuthModule,
       RestaurantModule,
+      IngredientsModule
     ],
 })
 export class AppModule {}
