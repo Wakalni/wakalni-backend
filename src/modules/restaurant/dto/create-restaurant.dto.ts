@@ -1,66 +1,59 @@
-import {
-    IsString,
-    IsNotEmpty,
-    IsOptional,
-    IsUUID,
-    IsArray,
-    ValidateNested,
-  } from 'class-validator';
-  import { Type } from 'class-transformer';
-  
-  class OpeningHoursDto {
+import { IsString, IsNotEmpty, IsOptional, IsUUID, IsArray, ValidateNested } from 'class-validator'
+import { Type } from 'class-transformer'
+
+class OpeningHoursDto {
     @IsString()
     @IsNotEmpty()
-    day_of_week: string;
-  
+    day_of_week: string
+
     @IsString()
     @IsNotEmpty()
-    open_time: string;
-  
+    open_time: string
+
     @IsString()
     @IsNotEmpty()
-    close_time: string;
-  
+    close_time: string
+
     @IsOptional()
-    is_closed?: boolean;
-  }
-  
-  export class CreateRestaurantDto {
+    is_closed?: boolean
+}
+
+export class CreateRestaurantDto {
     @IsString()
     @IsNotEmpty()
-    name: string;
-  
+    name: string
+
     @IsString()
     @IsNotEmpty()
-    address: string;
-  
+    address: string
+
     @IsString()
     @IsNotEmpty()
-    city: string;
-  
+    city: string
+
     @IsString()
     @IsNotEmpty()
-    country: string;
-  
+    country: string
+
     @IsString()
     @IsNotEmpty()
-    timezone: string;
-  
+    timezone: string
+
     @IsString()
     @IsOptional()
-    logo_url?: string;
-  
+    logo_url?: string
+
     @IsString()
     @IsOptional()
-    cover_image?: string;
-  
+    cover_image?: string
+
     @IsUUID()
     @IsNotEmpty()
-    admin_id: string;
-  
+    admin_id: string
+
     @IsArray()
     @ValidateNested({ each: true })
     @Type(() => OpeningHoursDto)
     @IsOptional()
-    opening_hours?: OpeningHoursDto[];
-  }
+    opening_hours?: OpeningHoursDto[]
+}
