@@ -4,42 +4,44 @@ import {
     PrimaryGeneratedColumn,
     CreateDateColumn,
     UpdateDateColumn,
-    Index,
+    OneToOne
 } from 'typeorm'
 import { UserRole } from '../enums/user-role.enum'
+import { Restaurant } from '../../restaurant/entities/restaurant.entity';
 
 @Entity('users')
 export class User {
-    @PrimaryGeneratedColumn('uuid')
-    id: string
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
-    @Column({ type: 'varchar', unique: true, nullable: true })
-    @Index()
-    email: string | null
+  @Column({ type: 'varchar', unique: true, nullable: true })
+  email: string | null;
 
-    @Column({ type: 'varchar', nullable: true })
-    phone: string | null
+  @Column({ type: 'varchar', nullable: true })
+  phone: string | null;
 
-    @Column({ type: 'varchar' })
-    name: string
+  @Column({ type: 'varchar' })
+  name: string;
 
-    @Column({ type: 'varchar', nullable: true })
-    password_hash: string | null
+  @Column({ type: 'varchar', nullable: true })
+  password_hash: string | null;
 
-    @Column({
-        type: 'enum',
-        enum: UserRole,
-        default: UserRole.CLIENT,
-    })
-    role: UserRole
+  @Column({ 
+    type: 'enum', 
+    enum: UserRole, 
+    default: UserRole.CLIENT 
+  })
+  role: UserRole;
 
-    @CreateDateColumn({ type: 'timestamp' })
-    created_at: Date
+  @Column({ type: 'uuid', nullable: true })
+  restaurant_id: string | null;
 
-    @UpdateDateColumn({ type: 'timestamp' })
-    updated_at: Date
+  @OneToOne('Restaurant', 'admin', { lazy: true })
+  restaurant: Promise<Restaurant>;
 
-    constructor(partial: Partial<User>) {
-        Object.assign(this, partial)
-    }
+  @CreateDateColumn({ type: 'timestamp' })
+  created_at: Date;
+
+  @UpdateDateColumn({ type: 'timestamp' })
+  updated_at: Date;
 }

@@ -4,8 +4,10 @@ import { TypeOrmModule } from '@nestjs/typeorm'
 import { UserModule } from './modules/user/user.module'
 import { AuthModule } from './modules/auth/auth.module'
 import { User } from './modules/user/entities/user.entity'
+import { RestaurantModule } from './modules/restaurant/restaurant.module';
 import { TypeOrmModuleOptions } from '@nestjs/typeorm'
-import { RestaurantModule } from './restaurant/restaurant.module';
+import { Restaurant } from './modules/restaurant/entities/restaurant.entity'
+import { OpeningHours } from './modules/restaurant/entities/opening-hours.entity'
 
 @Module({
     imports: [
@@ -23,11 +25,10 @@ import { RestaurantModule } from './restaurant/restaurant.module';
                 username: configService.get('POSTGRES_USER'),
                 password: configService.get('POSTGRES_PASSWORD'),
                 database: configService.get('POSTGRES_DB'),
-                entities: [User],
+                entities: [User, Restaurant, OpeningHours],
                 synchronize: configService.get('NODE_ENV') !== 'production',
                 logging: configService.get('NODE_ENV') !== 'production',
             }
-            console.log(dbconfig)
             return dbconfig as TypeOrmModuleOptions
         },
       }),
