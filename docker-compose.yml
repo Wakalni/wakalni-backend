@@ -1,0 +1,36 @@
+services:
+    postgres:
+        image: postgres:16-alpine
+        env_file:
+            - .env
+        container_name: postgres
+        ports:
+            - '5432:5432'
+        volumes:
+            - postgres_data:/var/lib/postgresql/data
+        networks:
+            - caravan-network
+
+
+    backend:
+        build: .
+        env_file:
+            - .env
+        container_name: backend
+        depends_on:
+            - postgres
+        ports:
+            - '8000:8000'
+        volumes:
+            - .:/usr/src/app
+            - /usr/src/app/node_modules
+        networks:
+            - caravan-network
+        command: yarn run start:prod
+
+volumes:
+    postgres_data:
+
+networks:
+    caravan-network:
+        driver: bridge
