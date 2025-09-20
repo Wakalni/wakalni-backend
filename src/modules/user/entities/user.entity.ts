@@ -10,6 +10,7 @@ import {
 import { UserRole } from '../enums/user-role.enum'
 import { Restaurant } from '../../restaurant/entities/restaurant.entity'
 import { Order } from '../../order/entities/order.entity'
+import { StockAdjustment } from '../../stock/entities/stock-adjustement.entity'
 
 @Entity('users')
 export class User {
@@ -43,6 +44,9 @@ export class User {
 
     @OneToMany(() => Order, (order) => order.user_id)
     orders: Order[]
+
+    @OneToMany(() => StockAdjustment, (adjustment) => adjustment.user)
+    stock_adjustments: StockAdjustment[];
 
     @CreateDateColumn({ type: 'timestamp' })
     created_at: Date

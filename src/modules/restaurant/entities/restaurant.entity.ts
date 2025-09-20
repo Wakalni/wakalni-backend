@@ -13,6 +13,7 @@ import { OpeningHours } from './opening-hours.entity'
 import { Ingredient } from 'src/modules/ingredient/entities/ingredient.entity'
 import { Menu } from '../../menu/entities/menu.entity'
 import { Order } from '../../order/entities/order.entity'
+import { StockItem } from 'src/modules/stock/entities/stock.entity'
 
 @Entity('restaurants')
 export class Restaurant {
@@ -60,6 +61,9 @@ export class Restaurant {
 
     @OneToMany(() => Order, (order) => order.restaurant)
     orders: Order[]
+
+    @OneToMany(() => StockItem, (stockItem) => stockItem.restaurant)
+    stock_items: StockItem[];
 
     @CreateDateColumn({ type: 'timestamp' })
     created_at: Date

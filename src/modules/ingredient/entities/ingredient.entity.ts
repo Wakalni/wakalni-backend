@@ -5,9 +5,11 @@ import {
     CreateDateColumn,
     UpdateDateColumn,
     ManyToOne,
+    OneToMany,
     JoinColumn,
 } from 'typeorm'
 import { Restaurant } from '../../restaurant/entities/restaurant.entity'
+import { StockItem } from '../../stock/entities/stock.entity'
 
 export enum IngredientCategory {
     MEAT = 'meat',
@@ -65,6 +67,9 @@ export class Ingredient {
     })
     @JoinColumn({ name: 'restaurant_id' })
     restaurant: Restaurant
+
+    @OneToMany(() => StockItem, (stockItem) => stockItem.ingredient)
+    stock_items: StockItem[];
 
     @CreateDateColumn({ type: 'timestamp' })
     created_at: Date
