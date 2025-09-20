@@ -5,9 +5,11 @@ import {
     CreateDateColumn,
     UpdateDateColumn,
     OneToOne,
+    OneToMany,
 } from 'typeorm'
 import { UserRole } from '../enums/user-role.enum'
 import { Restaurant } from '../../restaurant/entities/restaurant.entity'
+import { Order } from '../../order/entities/order.entity'
 
 @Entity('users')
 export class User {
@@ -38,6 +40,9 @@ export class User {
 
     @OneToOne('Restaurant', 'admin', { lazy: true })
     restaurant: Promise<Restaurant>
+
+    @OneToMany(() => Order, (order) => order.user_id)
+    orders: Order[]
 
     @CreateDateColumn({ type: 'timestamp' })
     created_at: Date

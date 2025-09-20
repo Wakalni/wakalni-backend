@@ -14,6 +14,9 @@ import { MenuModule } from './modules/menu/menu.module'
 import { Menu } from './modules/menu/entities/menu.entity'
 import { MenuItem } from './modules/menu/entities/menu-item.entity'
 import { Recipe } from './modules/menu/entities/recipe.entity'
+import { OrderModule } from './modules/order/order.module'
+import { Order } from './modules/order/entities/order.entity'
+import { OrderItem } from './modules/order/entities/order-item.entity'
 
 @Module({
     imports: [
@@ -31,7 +34,7 @@ import { Recipe } from './modules/menu/entities/recipe.entity'
                     username: configService.get('POSTGRES_USER'),
                     password: configService.get('POSTGRES_PASSWORD'),
                     database: configService.get('POSTGRES_DB'),
-                    entities: [User, Restaurant, OpeningHours, Ingredient, Menu, MenuItem, Recipe],
+                    entities: [User, Restaurant, OpeningHours, Ingredient, Menu, MenuItem, Recipe, Order, OrderItem],
                     synchronize: configService.get('NODE_ENV') !== 'production',
                     logging: configService.get('NODE_ENV') !== 'production',
                 }
@@ -43,6 +46,7 @@ import { Recipe } from './modules/menu/entities/recipe.entity'
         RestaurantModule,
         IngredientsModule,
         MenuModule,
+        OrderModule,
     ],
 })
 export class AppModule {}

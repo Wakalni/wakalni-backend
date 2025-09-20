@@ -12,6 +12,7 @@ import { User } from '../../user/entities/user.entity'
 import { OpeningHours } from './opening-hours.entity'
 import { Ingredient } from 'src/modules/ingredient/entities/ingredient.entity'
 import { Menu } from '../../menu/entities/menu.entity'
+import { Order } from '../../order/entities/order.entity'
 
 @Entity('restaurants')
 export class Restaurant {
@@ -49,13 +50,16 @@ export class Restaurant {
     @JoinColumn({ name: 'admin_id' })
     admin: User
 
-    @OneToMany(() => OpeningHours, (openingHours) => openingHours.restaurant, {
+    @OneToMany(() => OpeningHours, (openingHours) => openingHours.restaurant_id, {
         cascade: true,
     })
     opening_hours: OpeningHours[]
 
     @OneToMany(() => Ingredient, (ingredient) => ingredient.restaurant)
     ingredients: Ingredient[]
+
+    @OneToMany(() => Order, (order) => order.restaurant)
+    orders: Order[]
 
     @CreateDateColumn({ type: 'timestamp' })
     created_at: Date
