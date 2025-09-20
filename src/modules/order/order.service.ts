@@ -10,6 +10,7 @@ import { Restaurant } from '../restaurant/entities/restaurant.entity'
 import { User } from '../user/entities/user.entity'
 import { PaymentService } from '../payment/payment.service';
 import { Inject } from '@nestjs/common'
+import { PaymentStatus } from './entities/order.entity'
 
 @Injectable()
 export class OrderService {
@@ -207,8 +208,8 @@ export class OrderService {
     
         order.payment_id = paymentResult.paymentId;
         order.payment_provider = 'guidini';
-        order.payment_status = 'processing';
-    
+        order.payment_status = PaymentStatus.PROCESSING
+
         return this.orderRepository.save(order);
       }
     

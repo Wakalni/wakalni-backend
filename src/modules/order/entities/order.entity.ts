@@ -88,13 +88,13 @@ import {
       enum: PaymentStatus,
       default: PaymentStatus.PENDING,
     })
-    payment_status: PaymentStatus;
+    payment_status?: PaymentStatus;
   
     @Column({ type: 'varchar', nullable: true })
-    payment_id: string | null;
+    payment_id?: string | null;
   
     @Column({ type: 'varchar', nullable: true })
-    payment_provider: string | null;
+    payment_provider?: string | null;
   
     @Column({ type: 'jsonb', nullable: true })
     payment_metadata: any;
