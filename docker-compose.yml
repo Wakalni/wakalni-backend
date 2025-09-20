@@ -11,7 +11,6 @@ services:
         networks:
             - caravan-network
 
-
     backend:
         build: .
         env_file:
@@ -27,6 +26,20 @@ services:
         networks:
             - caravan-network
         command: yarn run start:prod
+
+    nginx:
+        build: 
+            context: ./nginx
+        container_name: nginx-caravan
+        ports:
+            - "443:443"
+        depends_on:
+            - backend
+        volumes:
+            - ./logs/nginx:/var/log/nginx
+        networks:
+            - caravan-network
+        restart: unless-stopped
 
 volumes:
     postgres_data:
