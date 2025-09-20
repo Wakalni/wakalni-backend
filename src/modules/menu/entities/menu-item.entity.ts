@@ -6,59 +6,52 @@ import {
     UpdateDateColumn,
     ManyToOne,
     JoinColumn,
-  } from 'typeorm';
-  import { Menu } from './menu.entity';
-  
-  export interface Recipe {
-    ingredients: Array<{
-      ingredient_id: string;
-      quantity: number;
-      unit: string;
-    }>;
-    instructions: string[];
-    preparation_time?: number;
-    cooking_time?: number;
-    servings?: number;
-  }
-  
-  @Entity('menu_items')
-  export class MenuItem {
+    OneToOne,
+} from 'typeorm'
+import { Menu } from './menu.entity'
+import { Recipe } from './recipe.entity'
+
+@Entity('menu_items')
+export class MenuItem {
     @PrimaryGeneratedColumn('uuid')
-    id: string;
-  
+    id: string
+
     @Column({ type: 'uuid' })
-    menu_id: string;
-  
+    menu_id: string
+
     @Column({ type: 'varchar', length: 255 })
-    name: string;
-  
+    name: string
+
     @Column({ type: 'text', nullable: true })
-    description: string;
-  
+    description: string
+
     @Column({ type: 'simple-array', nullable: true })
-    pics: string[];
-  
+    pics: string[]
+
     @Column({ type: 'integer' })
-    price: number;
-  
+    price: number
+
     @Column({ type: 'boolean', default: true })
-    available: boolean;
-  
-    @Column({ type: 'jsonb', default: { ingredients: [], instructions: [] } })
-    recipe: Recipe;
-  
+    available: boolean
+
     @Column({ type: 'varchar', length: 100, nullable: true })
-    category: string;
-  
+    category: string
+
     @ManyToOne(() => Menu, (menu) => menu.items, {
-      onDelete: 'CASCADE',
+        onDelete: 'CASCADE',
     })
     @JoinColumn({ name: 'menu_id' })
-    menu: Menu;
-  
+    menu: Menu
+
+    @OneToOne(() => Recipe, (recipe) => recipe.menu_item, {
+        cascade: true,
+        eager: true,
+    })
+    recipe: Recipe
+
     @CreateDateColumn({ type: 'timestamp' })
-    created_at: Date;
-  
+    created_at: Date
+
     @UpdateDateColumn({ type: 'timestamp' })
-    updated_at: Date;
-  }
+    updated_at: Date
+}

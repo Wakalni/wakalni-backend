@@ -10,9 +10,10 @@ import { Restaurant } from './modules/restaurant/entities/restaurant.entity'
 import { OpeningHours } from './modules/restaurant/entities/opening-hours.entity'
 import { Ingredient } from './modules/ingredient/entities/ingredient.entity'
 import { IngredientsModule } from './modules/ingredient/ingredient.module'
-import { MenuModule } from './modules/menu/menu.module';
+import { MenuModule } from './modules/menu/menu.module'
 import { Menu } from './modules/menu/entities/menu.entity'
 import { MenuItem } from './modules/menu/entities/menu-item.entity'
+import { Recipe } from './modules/menu/entities/recipe.entity'
 
 @Module({
     imports: [
@@ -30,7 +31,7 @@ import { MenuItem } from './modules/menu/entities/menu-item.entity'
                     username: configService.get('POSTGRES_USER'),
                     password: configService.get('POSTGRES_PASSWORD'),
                     database: configService.get('POSTGRES_DB'),
-                    entities: [User, Restaurant, OpeningHours, Ingredient, Menu, MenuItem],
+                    entities: [User, Restaurant, OpeningHours, Ingredient, Menu, MenuItem, Recipe],
                     synchronize: configService.get('NODE_ENV') !== 'production',
                     logging: configService.get('NODE_ENV') !== 'production',
                 }

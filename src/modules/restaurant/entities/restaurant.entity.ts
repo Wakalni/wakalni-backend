@@ -11,7 +11,7 @@ import {
 import { User } from '../../user/entities/user.entity'
 import { OpeningHours } from './opening-hours.entity'
 import { Ingredient } from 'src/modules/ingredient/entities/ingredient.entity'
-import { Menu } from '../../menu/entities/menu.entity';
+import { Menu } from '../../menu/entities/menu.entity'
 
 @Entity('restaurants')
 export class Restaurant {
@@ -40,7 +40,7 @@ export class Restaurant {
     cover_image: string
 
     @OneToMany(() => Menu, (menu) => menu.restaurant)
-    menus: Menu[];
+    menus: Menu[]
 
     @Column({ type: 'uuid', unique: true })
     admin_id: string

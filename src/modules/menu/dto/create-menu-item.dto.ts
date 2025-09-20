@@ -1,4 +1,3 @@
-// src/modules/menu/dto/create-menu-item.dto.ts
 import {
     IsString,
     IsNotEmpty,
@@ -7,79 +6,36 @@ import {
     IsNumber,
     IsBoolean,
     IsArray,
-    ValidateNested,
     Min,
-  } from 'class-validator';
-  import { Type } from 'class-transformer';
-  
-  class RecipeIngredientDto {
-    @IsUUID()
-    ingredient_id: string;
-  
-    @IsNumber()
-    @Min(0)
-    quantity: number;
-  
-    @IsString()
-    unit: string;
-  }
-  
-  class RecipeDto {
-    @IsArray()
-    @ValidateNested({ each: true })
-    @Type(() => RecipeIngredientDto)
-    ingredients: RecipeIngredientDto[];
-  
-    @IsArray()
-    @IsString({ each: true })
-    instructions: string[];
-  
-    @IsNumber()
-    @Min(0)
-    @IsOptional()
-    preparation_time?: number;
-  
-    @IsNumber()
-    @Min(0)
-    @IsOptional()
-    cooking_time?: number;
-  
-    @IsNumber()
-    @Min(1)
-    @IsOptional()
-    servings?: number;
-  }
-  
-  export class CreateMenuItemDto {
+} from 'class-validator'
+
+export class CreateMenuItemDto {
     @IsUUID()
     @IsNotEmpty()
-    menu_id: string;
-  
+    menu_id: string
+
     @IsString()
     @IsNotEmpty()
-    name: string;
-  
+    name: string
+
     @IsString()
     @IsOptional()
-    description?: string;
-  
+    description?: string
+
     @IsArray()
     @IsString({ each: true })
     @IsOptional()
-    pics?: string[];
-  
+    pics?: string[]
+
     @IsNumber()
     @Min(0)
-    price: number;
-  
+    price: number
+
     @IsBoolean()
     @IsOptional()
-    available?: boolean;
-  
-    @IsOptional()
-    recipe?: RecipeDto;
-  
+    available?: boolean
+
     @IsString()
     @IsOptional()
-    category?: string;
-  }
+    category?: string
+}
