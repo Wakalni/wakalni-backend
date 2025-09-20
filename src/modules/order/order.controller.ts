@@ -98,4 +98,29 @@ export class OrderController {
 
         return this.orderService.cancelOrder(id)
     }
+
+    @Post('with-payment')
+    @Roles(UserRole.CLIENT, UserRole.ADMIN, UserRole.SUPERADMIN)
+    async createOrderWithPayment(@Body() createOrderDto: CreateOrderDto, @Request() req) {
+        if (req.user && req.user.role !== UserRole.SUPERADMIN) {
+            createOrderDto.user_id = req.user.userId;
+        }
+        return this.orderService.createOrderWithPayment(createOrderDto);
+    }
+
+    @Post(':id/verify-payment')
+    @Roles(UserRole.SUPERADMIN, UserRole.ADMIN, UserRole.CLIENT)
+    async verifyOrderPayment(@Param('id') id: string, @Request() req) {
+        const order = await this.orderService.findOne(id);
+        
+        if (req.user.role === UserRole.CLIENT && order.user_id !== req.user.userId) {
+            throw new NotFoundException('Order not found');
+        }
+        
+        if (req.user.role === UserRole.ADMIN && order.restaurant_id !== req.user.restaurant_id) {
+            throw new NotFoundException('Order not found');
+        }
+
+        return this.orderService.verifyOrderPayment(id);
+    }
 }

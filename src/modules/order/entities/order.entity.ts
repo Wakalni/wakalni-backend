@@ -7,112 +7,145 @@ import {
     ManyToOne,
     JoinColumn,
     OneToMany,
-} from 'typeorm'
-import { Restaurant } from '../../restaurant/entities/restaurant.entity'
-import { User } from '../../user/entities/user.entity'
-import { OrderItem } from './order-item.entity'
-
-export enum OrderStatus {
+  } from 'typeorm';
+  import { Restaurant } from '../../restaurant/entities/restaurant.entity';
+  import { User } from '../../user/entities/user.entity';
+  import { OrderItem } from './order-item.entity';
+  
+  export enum OrderStatus {
     PENDING = 'pending',
     PREPARING = 'preparing',
     ON_DELIVERY = 'on-delivery',
     COMPLETED = 'completed',
     CANCELLED = 'cancelled',
-}
-
-export enum PaymentMethod {
+  }
+  
+  export enum PaymentMethod {
     CARD = 'card',
     WALLET = 'wallet',
     CASH = 'cash',
-}
-
-export interface DeliveryAddress {
-    street: string
-    city: string
-    state: string
-    zip_code: string
-    country: string
-    apartment?: string
-    instructions?: string
-}
-
-export interface Invoice {
-    subtotal: number
-    delivery_fee: number
-    tax: number
-    discount?: number
-    total: number
+  }
+  
+  export enum PaymentStatus {
+    PENDING = 'pending',
+    PROCESSING = 'processing',
+    SUCCESS = 'success',
+    FAILED = 'failed',
+    CANCELLED = 'cancelled',
+  }
+  
+  export interface DeliveryAddress {
+    street: string;
+    city: string;
+    state: string;
+    zip_code: string;
+    country: string;
+    apartment?: string;
+    instructions?: string;
+  }
+  
+  export interface Invoice {
+    subtotal: number;
+    delivery_fee: number;
+    tax: number;
+    discount?: number;
+    total: number;
     items: Array<{
-        menu_item_id: string
-        name: string
-        quantity: number
-        price: number
-        total: number
-    }>
-}
-
-@Entity('orders')
-export class Order {
+      menu_item_id: string;
+      name: string;
+      quantity: number;
+      price: number;
+      total: number;
+    }>;
+  }
+  
+  @Entity('orders')
+  export class Order {
     @PrimaryGeneratedColumn('uuid')
-    id: string
-
+    id: string;
+  
     @Column({ type: 'uuid' })
-    restaurant_id: string
-
+    restaurant_id: string;
+  
     @Column({ type: 'uuid', nullable: true })
-    user_id: string | null
-
+    user_id: string | null;
+  
     @Column({
-        type: 'enum',
-        enum: OrderStatus,
-        default: OrderStatus.PENDING,
+      type: 'enum',
+      enum: OrderStatus,
+      default: OrderStatus.PENDING,
     })
-    status: OrderStatus
-
+    status: OrderStatus;
+  
     @Column({
-        type: 'enum',
-        enum: PaymentMethod,
+      type: 'enum',
+      enum: PaymentMethod,
     })
-    payment_method: PaymentMethod
-
+    payment_method: PaymentMethod;
+  
+    @Column({
+      type: 'enum',
+      enum: PaymentStatus,
+      default: PaymentStatus.PENDING,
+    })
+    payment_status: PaymentStatus;
+  
+    @Column({ type: 'varchar', nullable: true })
+    payment_id: string | null;
+  
+    @Column({ type: 'varchar', nullable: true })
+    payment_provider: string | null;
+  
+    @Column({ type: 'jsonb', nullable: true })
+    payment_metadata: any;
+  
     @Column({ type: 'jsonb' })
-    invoice: Invoice
-
+    invoice: Invoice;
+  
     @Column({ type: 'jsonb' })
-    delivery_address: DeliveryAddress
-
+    delivery_address: DeliveryAddress;
+  
     @ManyToOne(() => Restaurant, (restaurant) => restaurant.orders, {
-        onDelete: 'CASCADE',
+      onDelete: 'CASCADE',
     })
     @JoinColumn({ name: 'restaurant_id' })
-    restaurant: Restaurant
-
+    restaurant: Restaurant;
+  
     @ManyToOne(() => User, (user) => user.orders, {
-        onDelete: 'SET NULL',
-        nullable: true,
+      onDelete: 'SET NULL',
+      nullable: true,
     })
     @JoinColumn({ name: 'user_id' })
-    user: User | null
-
+    user: User | null;
+  
     @OneToMany(() => OrderItem, (orderItem) => orderItem.order, {
-        cascade: true,
-        eager: true,
+      cascade: true,
+      eager: true,
     })
-    items: OrderItem[]
-
+    items: OrderItem[];
+  
     @CreateDateColumn({ type: 'timestamp' })
-    created_at: Date
-
+    created_at: Date;
+  
     @UpdateDateColumn({ type: 'timestamp' })
-    updated_at: Date
-
+    updated_at: Date;
+  
     get order_number(): string {
-        return `ORD-${this.created_at.getFullYear()}${String(this.created_at.getMonth() + 1).padStart(2, '0')}${this.id.slice(0, 8).toUpperCase()}`
+      return `ORD-${this.created_at.getFullYear()}${String(this.created_at.getMonth() + 1).padStart(2, '0')}${this.id.slice(0, 8).toUpperCase()}`;
     }
-
+  
     get estimated_delivery_time(): Date {
-        const deliveryTime = new Date(this.created_at)
-        deliveryTime.setMinutes(deliveryTime.getMinutes() + 45)
-        return deliveryTime
+      const deliveryTime = new Date(this.created_at);
+      deliveryTime.setMinutes(deliveryTime.getMinutes() + 45);
+      return deliveryTime;
     }
-}
+  
+    get is_paid(): boolean {
+      return this.payment_status === PaymentStatus.SUCCESS;
+    }
+  
+    get is_payment_pending(): boolean {
+      return this.payment_status === PaymentStatus.PENDING || 
+             this.payment_status === PaymentStatus.PROCESSING;
+    }
+  }

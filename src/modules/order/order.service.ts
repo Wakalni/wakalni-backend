@@ -8,6 +8,8 @@ import { UpdateOrderDto } from './dto/update-order.dto'
 import { OrderStatus, Invoice } from './entities/order.entity'
 import { Restaurant } from '../restaurant/entities/restaurant.entity'
 import { User } from '../user/entities/user.entity'
+import { PaymentService } from '../payment/payment.service';
+import { Inject } from '@nestjs/common'
 
 @Injectable()
 export class OrderService {
@@ -20,6 +22,9 @@ export class OrderService {
         private restaurantRepository: Repository<Restaurant>,
         @InjectRepository(User)
         private userRepository: Repository<User>,
+        @Inject(PaymentService)
+        private paymentService: PaymentService,
+
     ) {}
 
     async create(createOrderDto: CreateOrderDto): Promise<Order> {
@@ -151,8 +156,8 @@ export class OrderService {
 
     private calculateInvoice(items: any[]): Invoice {
         const subtotal = items.reduce((sum, item) => sum + item.quantity * item.unit_price, 0)
-        const delivery_fee = 500 // $5.00 delivery fee
-        const tax = Math.round(subtotal * 0.08) // 8% tax
+        const delivery_fee = 500 
+        const tax = Math.round(subtotal * 0.08)
         const total = subtotal + delivery_fee + tax
 
         return {
@@ -181,4 +186,50 @@ export class OrderService {
 
         return validTransitions[currentStatus].includes(newStatus)
     }
+
+    async createOrderWithPayment(createOrderDto: CreateOrderDto) {
+        const order = await this.create(createOrderDto);
+    
+        const paymentResult = await this.paymentService.initiatePayment(
+          order.invoice.total,
+          'guidini',
+          'DZD',
+          {
+            order_id: order.id,
+            customer_email: order.user?.email,
+            language: 'fr',
+          }
+        );
+    
+        if (!paymentResult.success) {
+          throw new Error(`Payment initiation failed: ${paymentResult.error}`);
+        }
+    
+        order.payment_id = paymentResult.paymentId;
+        order.payment_provider = 'guidini';
+        order.payment_status = 'processing';
+    
+        return this.orderRepository.save(order);
+      }
+    
+      async verifyOrderPayment(orderId: string) {
+        const order = await this.findOne(orderId);
+        
+        if (!order.payment_id || !order.payment_provider) {
+          throw new Error('Order does not have payment information');
+        }
+    
+        const verificationResult = await this.paymentService.verifyPayment(
+          order.payment_id,
+          order.payment_provider
+        );
+    
+        order.payment_status = verificationResult.status;
+    
+        if (verificationResult.success) {
+          order.status = OrderStatus.PREPARING;
+        }
+    
+        return this.orderRepository.save(order);
+      }
 }
