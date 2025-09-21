@@ -1,49 +1,74 @@
 services:
-    postgres:
-        image: postgres:16-alpine
-        env_file:
-            - .env
-        container_name: postgres
-        ports:
-            - '5432:5432'
-        volumes:
-            - postgres_data:/var/lib/postgresql/data
-        networks:
-            - caravan-network
+  caravan-postgres:
+    image: postgres:16-alpine
+    container_name: caravan-postgres
+    env_file:
+      - .env
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - caravan-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
 
-    backend:
-        build: .
-        env_file:
-            - .env
-        container_name: backend
-        depends_on:
-            - postgres
-        ports:
-            - '8000:8000'
-        volumes:
-            - .:/usr/src/app
-            - /usr/src/app/node_modules
-        networks:
-            - caravan-network
-        command: yarn run start:prod
+  caravan-nginx:
+    build:
+      context: ./nginx
+    container_name: caravan-nginx
+    environment:
+      BACKEND_HOST: caravan-backend
+    depends_on:
+      caravan-postgres:
+        condition: service_healthy
+    ports:
+      - "8080:80"
+    volumes:
+      - ./logs/nginx:/var/log/nginx
+    networks:
+      - caravan-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
 
-    nginx:
-        build: 
-            context: ./nginx
-        container_name: nginx-caravan
-        ports:
-            - "443:443"
-        depends_on:
-            - backend
-        volumes:
-            - ./logs/nginx:/var/log/nginx
-        networks:
-            - caravan-network
-        restart: unless-stopped
+  caravan-backend:
+    build: .
+    container_name: caravan-backend
+    env_file:
+      - .env
+    depends_on:
+      caravan-nginx:
+        condition: service_healthy
+    ports:
+      - "8000:8000"
+    volumes:
+      - backend_logs:/usr/src/app/logs
+      - /usr/src/app/node_modules
+    networks:
+      - caravan-network
+    command: yarn run start:prod
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8000/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
 
 volumes:
-    postgres_data:
+  postgres_data:
+  backend_logs:
 
 networks:
-    caravan-network:
-        driver: bridge
+  caravan-network:
+    driver: bridge
