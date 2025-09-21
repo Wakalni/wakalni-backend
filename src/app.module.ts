@@ -20,6 +20,8 @@ import { OrderItem } from './modules/order/entities/order-item.entity'
 import { StockAdjustment } from './modules/stock/entities/stock-adjustement.entity'
 import { StockItem } from './modules/stock/entities/stock.entity'
 import { PaymentModule } from './modules/payment/payment.module';
+import { AppController } from './app.controller'
+import { AppService } from './app.service'
 
 @Module({
     imports: [
@@ -52,5 +54,7 @@ import { PaymentModule } from './modules/payment/payment.module';
         OrderModule,
         PaymentModule
     ],
+    controllers: [AppController],
+    providers: [AppService]
 })
 export class AppModule {}

@@ -1,5 +1,5 @@
 services:
-  caravan-postgres:
+  postgres:
     image: postgres:16-alpine
     container_name: caravan-postgres
     env_file:
@@ -13,19 +13,19 @@ services:
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 10s
+      interval: 3s
+      timeout: 3s
+      retries: 2
+      start_period: 5s
 
-  caravan-nginx:
+  nginx:
     build:
       context: ./nginx
     container_name: caravan-nginx
     environment:
       BACKEND_HOST: caravan-backend
     depends_on:
-      caravan-postgres:
+      backend:
         condition: service_healthy
     ports:
       - "8080:80"
@@ -34,23 +34,15 @@ services:
     networks:
       - caravan-network
     restart: unless-stopped
-    healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost/health || exit 1"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 10s
 
-  caravan-backend:
+  backend:
     build: .
     container_name: caravan-backend
     env_file:
       - .env
     depends_on:
-      caravan-nginx:
+      postgres:
         condition: service_healthy
-    ports:
-      - "8000:8000"
     volumes:
       - backend_logs:/usr/src/app/logs
       - /usr/src/app/node_modules
@@ -59,11 +51,11 @@ services:
     command: yarn run start:prod
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:8000/health || exit 1"]
-      interval: 10s
+      test: ["CMD-SHELL", "curl -v http://localhost:8000/api/v0/health || exit 1"]
+      interval: 5s
       timeout: 5s
-      retries: 5
-      start_period: 10s
+      retries: 2
+      start_period: 5s
 
 volumes:
   postgres_data:

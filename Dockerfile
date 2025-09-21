@@ -4,6 +4,8 @@ RUN corepack enable
 
 WORKDIR /usr/src/app
 
+RUN apk add --no-cache curl
+
 COPY package*.json ./
 
 COPY yarn.lock ./
@@ -16,4 +18,4 @@ RUN yarn build
 
 EXPOSE 8000
 
-CMD ["yarn", "start:dev"]
+CMD ["yarn", "start:prod"]
