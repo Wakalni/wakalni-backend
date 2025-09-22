@@ -22,15 +22,16 @@ services:
     build:
       context: ./nginx
     container_name: caravan-nginx
-    environment:
-      BACKEND_HOST: caravan-backend
     depends_on:
       backend:
         condition: service_healthy
     ports:
       - "8080:80"
+      - "443:443"
     volumes:
       - ./logs/nginx:/var/log/nginx
+      - ./data/certbot/www:/var/www/html
+      - ./data/certbot/conf:/etc/letsencrypt
     networks:
       - caravan-network
     restart: unless-stopped
@@ -38,8 +39,6 @@ services:
   backend:
     build: .
     container_name: caravan-backend
-    env_file:
-      - .env
     depends_on:
       postgres:
         condition: service_healthy
