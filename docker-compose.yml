@@ -2,8 +2,10 @@ services:
   postgres:
     image: postgres:16-alpine
     container_name: caravan-postgres
-    env_file:
-      - .env
+    environment:
+      - POSTGRES_HOST=${POSTGRES_HOST}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
     ports:
       - "5432:5432"
     volumes:
@@ -39,6 +41,8 @@ services:
   backend:
     build: .
     container_name: caravan-backend
+    env_file:
+      - .env
     depends_on:
       postgres:
         condition: service_healthy

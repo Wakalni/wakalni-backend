@@ -4,6 +4,7 @@ nginx/
 dist/
 data/
 
+.env
 .gitignore
 .dockerignore
 npm-debug.log
