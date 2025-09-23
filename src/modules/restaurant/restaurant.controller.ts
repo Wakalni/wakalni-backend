@@ -8,6 +8,7 @@ import {
     Delete,
     UseGuards,
     ParseUUIDPipe,
+    Patch,
 } from '@nestjs/common';
 import { RestaurantService } from './restaurant.service';
 import { CreateRestaurantDto } from './dto/create-restaurant.dto';
@@ -17,6 +18,7 @@ import { JwtGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { User } from '../auth/decorators/user.decorator';
 import { SetOpeningHoursDto } from './dto/set-opening-hours.dto';
+import { SetOpenedStatus } from './dto/set-opened-status.dto';
   
   @Controller('restaurants')
   @UseGuards(JwtGuard, RolesGuard)
@@ -38,6 +40,18 @@ import { SetOpeningHoursDto } from './dto/set-opening-hours.dto';
       return this.restaurantService.setOpeningHours(
         id,
         hours
+      );
+    }
+
+    @Patch(':id/opened')
+    setOpenedStatus(
+      @Param('id', ParseUUIDPipe) id: string,
+      @User('id') userId: string,
+      @Body() dto: SetOpenedStatus,
+    ) {
+      return this.restaurantService.setOpenedStatus(
+        id,
+        dto.status
       );
     }
 

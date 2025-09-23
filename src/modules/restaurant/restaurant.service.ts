@@ -61,6 +61,16 @@ import { SetOpeningHoursDto } from './dto/set-opening-hours.dto';
       return restaurant;
     }
 
+    async setOpenedStatus(
+      id: string,
+      status: boolean
+    ) {
+      await this.restaurantRepo.update(id, {
+        opened: status,
+      })
+      return
+    }
+
     async setOpeningHours(
       restaurantId: string,
       hours: SetOpeningHoursDto[],

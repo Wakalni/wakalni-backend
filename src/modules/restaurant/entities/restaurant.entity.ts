@@ -39,6 +39,9 @@ export class Restaurant {
     @OneToMany(() => RestaurantOwnership, (employee) => employee.restaurant)
     ownerships: RestaurantOwnership[];
 
+    @Column({ type: 'boolean', default: false })
+    opened: boolean;
+
     @OneToMany(() => OpeningHours, (openingHours) => openingHours.restaurant, {
         cascade: true,
     })
