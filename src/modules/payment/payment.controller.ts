@@ -9,18 +9,18 @@ import {
 import { PaymentService } from './payment.service';
 import { InitiatePaymentDto } from './dto/initiate-payment.dto';
 import { VerifyPaymentDto } from './dto/verify-payment.dto';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { JwtGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { UserRole } from '../user/enums/user-role.enum';
 
 @Controller('payments')
-@UseGuards(JwtAuthGuard, RolesGuard)
+@UseGuards(JwtGuard, RolesGuard)
 export class PaymentController {
   constructor(private readonly paymentService: PaymentService) {}
 
   @Post('initiate')
-  @Roles(UserRole.CLIENT, UserRole.ADMIN, UserRole.SUPERADMIN)
+  @Roles(UserRole.CLIENT, UserRole.ADMIN, UserRole.ADMIN)
   async initiatePayment(@Body() initiatePaymentDto: InitiatePaymentDto) {
     const result = await this.paymentService.initiatePayment(
       initiatePaymentDto.amount,
@@ -45,7 +45,7 @@ export class PaymentController {
   }
 
   @Get('verify')
-  @Roles(UserRole.SUPERADMIN, UserRole.ADMIN, UserRole.CLIENT)
+  @Roles(UserRole.ADMIN, UserRole.ADMIN, UserRole.CLIENT)
   async verifyPayment(@Query() verifyPaymentDto: VerifyPaymentDto) {
     const result = await this.paymentService.verifyPayment(
       verifyPaymentDto.paymentId,
@@ -62,7 +62,7 @@ export class PaymentController {
   }
 
   @Get('providers')
-  @Roles(UserRole.SUPERADMIN, UserRole.ADMIN, UserRole.CLIENT)
+  @Roles(UserRole.ADMIN, UserRole.ADMIN, UserRole.CLIENT)
   getAvailableProviders() {
     return {
       providers: this.paymentService.getAvailableProviders(),

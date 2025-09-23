@@ -25,10 +25,10 @@ export class IngredientsService {
     ): Promise<Ingredient> {
         const { name, restaurant_id } = createIngredientDto
 
-        // Global ingredients must be created by SUPERADMIN
+        // Global ingredients must be created by ADMIN
         const isGlobal = !restaurant_id
-        if (isGlobal && userRole !== UserRole.SUPERADMIN) {
-            throw new ForbiddenException('Only superadmins can create global ingredients')
+        if (isGlobal && userRole !== UserRole.ADMIN) {
+            throw new ForbiddenException('Only ADMINs can create global ingredients')
         }
 
         const whereCondition = {
@@ -89,8 +89,8 @@ export class IngredientsService {
     ): Promise<Ingredient> {
         const ingredient = await this.findOne(id)
 
-        if (userRole !== UserRole.SUPERADMIN) {
-            throw new ForbiddenException('Only superadmins can update global ingredients')
+        if (userRole !== UserRole.ADMIN) {
+            throw new ForbiddenException('Only ADMINs can update global ingredients')
         }
 
         Object.assign(ingredient, updateIngredientDto)
@@ -100,8 +100,8 @@ export class IngredientsService {
     async remove(id: string, userId?: string, userRole?: UserRole): Promise<void> {
         const ingredient = await this.findOne(id)
 
-        if (userRole !== UserRole.SUPERADMIN) {
-            throw new ForbiddenException('Only superadmins can delete global ingredients')
+        if (userRole !== UserRole.ADMIN) {
+            throw new ForbiddenException('Only ADMINs can delete global ingredients')
         }
 
         await this.ingredientsRepository.remove(ingredient)

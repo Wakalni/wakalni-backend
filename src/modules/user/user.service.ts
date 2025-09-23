@@ -1,9 +1,9 @@
-import { Injectable, NotFoundException, ConflictException } from '@nestjs/common'
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
 import { User } from './entities/user.entity'
 import { CreateUserDto } from './dto/create-user.dto'
-import { UpdateUserDto } from './dto/update-user.dto'
+import { UpdateUserDto, UpdateUserPasswordDto } from './dto/update-user.dto'
 import * as bcrypt from 'bcrypt'
 
 @Injectable()
@@ -14,27 +14,15 @@ export class UserService {
     ) {}
 
     async create(createUserDto: CreateUserDto): Promise<User> {
-        // Check if email already exists
-        if (createUserDto.email) {
-            const existingUser = await this.usersRepository.findOne({
-                where: { email: createUserDto.email },
-            })
-            if (existingUser) {
-                throw new ConflictException('Email already exists')
-            }
-        }
-
-        // Hash password if provided
-        let passwordHash = null
-        if (createUserDto.password) {
-            passwordHash = await bcrypt.hash(createUserDto.password, 10)
-        }
-
+        const userExist = await this.usersRepository.findOne({
+            where: { email: createUserDto.email },
+        })
+        if (userExist) throw new BadRequestException('An error occurred');
+        const passwordHashed = await bcrypt.hash(createUserDto.password, 10)
         const user = this.usersRepository.create({
             ...createUserDto,
-            password_hash: passwordHash,
+            password: passwordHashed,
         })
-
         return this.usersRepository.save(user)
     }
 
@@ -44,9 +32,7 @@ export class UserService {
 
     async findOne(id: string): Promise<User> {
         const user = await this.usersRepository.findOne({ where: { id } })
-        if (!user) {
-            throw new NotFoundException(`User with ID ${id} not found`)
-        }
+        if (!user) throw new NotFoundException(`User not found`)
         return user
     }
 
@@ -60,35 +46,33 @@ export class UserService {
 
     async update(id: string, updateUserDto: UpdateUserDto): Promise<User> {
         const user = await this.findOne(id)
-
-        // Hash new password if provided
-        if (updateUserDto.password) {
-            updateUserDto.password = await bcrypt.hash(updateUserDto.password, 10)
-        }
-
         Object.assign(user, updateUserDto)
         return this.usersRepository.save(user)
     }
 
-    async remove(id: string): Promise<void> {
+    async updatePassword(id: string, updateUserpasswordDto: UpdateUserPasswordDto): Promise<User> {
         const user = await this.findOne(id)
-        await this.usersRepository.remove(user)
+        updateUserpasswordDto.oldPassword = await bcrypt.hash(updateUserpasswordDto.oldPassword, 10)
+        if (user.password !== updateUserpasswordDto.oldPassword) throw new BadRequestException('An Error Occurred')
+        updateUserpasswordDto.newPassword = await bcrypt.hash(updateUserpasswordDto.newPassword, 10)
+        Object.assign(user, updateUserpasswordDto)
+        return this.usersRepository.save(user)
     }
 
-    async validateUser(identifier: string, password: string): Promise<User | null> {
-        let user: User | null = null
+    async remove(id: string): Promise<void> {
+        const result = await this.usersRepository.update(id, {_deleted: true})
+        if (result.affected === 0) throw new BadRequestException(`Erroor occurred`)
+    }
 
-        // Try to find by email or phone
-        if (identifier.includes('@')) {
-            user = await this.findByEmail(identifier)
-        } else {
-            user = await this.findByPhone(identifier)
-        }
-
-        if (user && user.password_hash && (await bcrypt.compare(password, user.password_hash))) {
-            return user
-        }
-
-        return null
+    async findOneByCredentials(identifier: string, password: string): Promise<User> {
+        const user = await this.usersRepository.findOne({
+            where: { 
+                email: identifier,
+            }
+        })
+        if (!user) throw new BadRequestException('An Error Occurred')
+        const passwordMatched = await bcrypt.compare(password, user.password)
+        if (!passwordMatched) throw new BadRequestException('An Error Occurred')
+        return user
     }
 }

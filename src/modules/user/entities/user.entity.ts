@@ -21,13 +21,25 @@ export class User {
     email: string | null
 
     @Column({ type: 'varchar', nullable: true })
+    password: string | null
+
+    @Column({ type: 'varchar', nullable: true })
     phone: string | null
 
     @Column({ type: 'varchar' })
     name: string
 
-    @Column({ type: 'varchar', nullable: true })
-    password_hash: string | null
+    @Column({ type: 'varchar' })
+    lastName: string
+
+    @Column({ type: 'boolean', default: false })
+    _banned: boolean
+
+    @Column({ type: 'boolean', default: false })
+    _deleted: boolean
+
+    @Column({ type: 'boolean', default: false })
+    _verified: boolean
 
     @Column({
         type: 'enum',

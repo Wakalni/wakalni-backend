@@ -13,20 +13,20 @@ import {
 import { RestaurantService } from './restaurant.service'
 import { CreateRestaurantDto } from './dto/create-restaurant.dto'
 import { UpdateRestaurantDto } from './dto/update-restaurant.dto'
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
+import { JwtGuard } from '../auth/guards/jwt-auth.guard'
 import { RolesGuard } from '../auth/guards/roles.guard'
 import { Roles } from '../auth/decorators/roles.decorator'
 import { UserRole } from '../user/enums/user-role.enum'
 
 @Controller('restaurants')
-@UseGuards(JwtAuthGuard, RolesGuard)
+@UseGuards(JwtGuard, RolesGuard)
 export class RestaurantsController {
     constructor(private readonly restaurantsService: RestaurantService) {}
 
     @Post()
-    @Roles(UserRole.ADMIN, UserRole.SUPERADMIN)
+    @Roles(UserRole.ADMIN, UserRole.ADMIN)
     create(@Body() createRestaurantDto: CreateRestaurantDto, @Request() req) {
-        // For non-superadmins, ensure they can only create restaurants for themselves
+        // For non-ADMINs, ensure they can only create restaurants for themselves
         if (req.user.role === UserRole.ADMIN) {
             createRestaurantDto.admin_id = req.user.userId
         }
@@ -34,7 +34,7 @@ export class RestaurantsController {
     }
 
     @Get()
-    @Roles(UserRole.SUPERADMIN, UserRole.ADMIN, UserRole.CLIENT)
+    @Roles(UserRole.ADMIN, UserRole.ADMIN, UserRole.CLIENT)
     findAll() {
         return this.restaurantsService.findAll()
     }
@@ -46,13 +46,13 @@ export class RestaurantsController {
     }
 
     @Get(':id')
-    @Roles(UserRole.SUPERADMIN, UserRole.ADMIN, UserRole.CLIENT)
+    @Roles(UserRole.ADMIN, UserRole.ADMIN, UserRole.CLIENT)
     findOne(@Param('id') id: string) {
         return this.restaurantsService.findOne(id)
     }
 
     @Patch(':id')
-    @Roles(UserRole.SUPERADMIN, UserRole.ADMIN)
+    @Roles(UserRole.ADMIN, UserRole.ADMIN)
     async update(
         @Param('id') id: string,
         @Body() updateRestaurantDto: UpdateRestaurantDto,
@@ -70,7 +70,7 @@ export class RestaurantsController {
     }
 
     @Delete(':id')
-    @Roles(UserRole.SUPERADMIN, UserRole.ADMIN)
+    @Roles(UserRole.ADMIN, UserRole.ADMIN)
     async remove(@Param('id') id: string, @Request() req) {
         // Check if user has permission to delete this restaurant
         if (req.user.role === UserRole.ADMIN) {
