@@ -22,6 +22,7 @@ import { StockItem } from './modules/stock/entities/stock.entity'
 import { PaymentModule } from './modules/payment/payment.module';
 import { AppController } from './app.controller'
 import { AppService } from './app.service'
+import { RestaurantOwnership } from './modules/restaurant/entities/restaurant-ownership.entity'
 
 @Module({
     imports: [
@@ -39,7 +40,7 @@ import { AppService } from './app.service'
                     username: configService.get('POSTGRES_USER'),
                     password: configService.get('POSTGRES_PASSWORD'),
                     database: configService.get('POSTGRES_DB'),
-                    entities: [User, Restaurant, OpeningHours, Ingredient, Menu, MenuItem, Recipe, Order, OrderItem, StockAdjustment, StockItem],
+                    entities: [User, Restaurant, RestaurantOwnership, OpeningHours, Ingredient, Menu, MenuItem, Recipe, Order, OrderItem, StockAdjustment, StockItem],
                     synchronize: configService.get('NODE_ENV') !== 'production',
                     logging: configService.get('NODE_ENV') !== 'production',
                 }

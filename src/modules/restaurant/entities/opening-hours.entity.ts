@@ -7,16 +7,13 @@ export class OpeningHours {
     id: string
 
     @Column({ type: 'varchar', length: 10 })
-    day_of_week: string // 'monday', 'tuesday', etc.
+    day_of_week: string
 
     @Column({ type: 'time' })
     open_time: string
 
     @Column({ type: 'time' })
     close_time: string
-
-    @Column({ type: 'boolean', default: false })
-    is_closed: boolean
 
     @Column({ type: 'uuid' })
     restaurant_id: string

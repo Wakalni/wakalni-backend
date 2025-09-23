@@ -4,13 +4,12 @@ import {
     PrimaryGeneratedColumn,
     CreateDateColumn,
     UpdateDateColumn,
-    OneToOne,
     OneToMany,
 } from 'typeorm'
 import { UserRole } from '../enums/user-role.enum'
-import { Restaurant } from '../../restaurant/entities/restaurant.entity'
 import { Order } from '../../order/entities/order.entity'
 import { StockAdjustment } from '../../stock/entities/stock-adjustement.entity'
+import { RestaurantOwnership } from 'src/modules/restaurant/entities/restaurant-ownership.entity'
 
 @Entity('users')
 export class User {
@@ -48,11 +47,8 @@ export class User {
     })
     role: UserRole
 
-    @Column({ type: 'uuid', nullable: true })
-    restaurant_id: string | null
-
-    @OneToOne('Restaurant', 'admin', { lazy: true })
-    restaurant: Promise<Restaurant>
+    @OneToMany(() => RestaurantOwnership, (employee) => employee.user)
+    ownerships: RestaurantOwnership[];
 
     @OneToMany(() => Order, (order) => order.user_id)
     orders: Order[]

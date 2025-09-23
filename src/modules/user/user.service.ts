@@ -5,6 +5,7 @@ import { User } from './entities/user.entity'
 import { CreateUserDto } from './dto/create-user.dto'
 import { UpdateUserDto, UpdateUserPasswordDto } from './dto/update-user.dto'
 import * as bcrypt from 'bcrypt'
+import { UnauthorizedException } from '@nestjs/common/exceptions'
 
 @Injectable()
 export class UserService {
@@ -64,15 +65,14 @@ export class UserService {
         if (result.affected === 0) throw new BadRequestException(`Erroor occurred`)
     }
 
-    async findOneByCredentials(identifier: string, password: string): Promise<User> {
+    async findOneByCredentials(email: string, password: string): Promise<User> {
         const user = await this.usersRepository.findOne({
-            where: { 
-                email: identifier,
-            }
+            where: { email},
         })
-        if (!user) throw new BadRequestException('An Error Occurred')
+        console.log("user:", user);
+        if (!user) throw new UnauthorizedException('Invalid credentials')
         const passwordMatched = await bcrypt.compare(password, user.password)
-        if (!passwordMatched) throw new BadRequestException('An Error Occurred')
+        if (!passwordMatched) throw new UnauthorizedException('Invalid credentials')
         return user
     }
 }

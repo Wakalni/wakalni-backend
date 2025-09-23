@@ -20,8 +20,6 @@ export class AuthService {
     async login(loginUserDto: LoginUserDto) {
         const { email, password } = loginUserDto
         const user = await this.usersService.findOneByCredentials(email, password)
-        if (!user) throw new UnauthorizedException('Invalid credentials')
-
         const payload = {
             sub: user.id,
             email: user.email,
@@ -30,13 +28,7 @@ export class AuthService {
 
         return {
             access_token: this.jwtService.sign(payload),
-            data: {
-                id: user.id,
-                email: user.email,
-                name: user.name,
-                role: user.role,
-                restaurant_id: user.restaurant_id,
-            },
+            data: { ...user, password: undefined },
         }
     }
 

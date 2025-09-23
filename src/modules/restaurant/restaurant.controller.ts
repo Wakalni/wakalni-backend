@@ -1,85 +1,76 @@
 import {
     Controller,
-    Get,
     Post,
+    Get,
+    Put,
     Body,
-    Patch,
     Param,
     Delete,
     UseGuards,
-    Request,
-    ForbiddenException,
-} from '@nestjs/common'
-import { RestaurantService } from './restaurant.service'
-import { CreateRestaurantDto } from './dto/create-restaurant.dto'
-import { UpdateRestaurantDto } from './dto/update-restaurant.dto'
-import { JwtGuard } from '../auth/guards/jwt-auth.guard'
-import { RolesGuard } from '../auth/guards/roles.guard'
-import { Roles } from '../auth/decorators/roles.decorator'
-import { UserRole } from '../user/enums/user-role.enum'
-
-@Controller('restaurants')
-@UseGuards(JwtGuard, RolesGuard)
-export class RestaurantsController {
-    constructor(private readonly restaurantsService: RestaurantService) {}
-
+    ParseUUIDPipe,
+} from '@nestjs/common';
+import { RestaurantService } from './restaurant.service';
+import { CreateRestaurantDto } from './dto/create-restaurant.dto';
+import { Roles } from '../auth/decorators/roles.decorator';
+import { UserRole } from '../user/enums/user-role.enum';
+import { JwtGuard } from '../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { User } from '../auth/decorators/user.decorator';
+import { SetOpeningHoursDto } from './dto/set-opening-hours.dto';
+  
+  @Controller('restaurants')
+  @UseGuards(JwtGuard, RolesGuard)
+  export class RestaurantController {
+    constructor(private readonly restaurantService: RestaurantService) {}
+  
     @Post()
-    @Roles(UserRole.ADMIN, UserRole.ADMIN)
-    create(@Body() createRestaurantDto: CreateRestaurantDto, @Request() req) {
-        // For non-ADMINs, ensure they can only create restaurants for themselves
-        if (req.user.role === UserRole.ADMIN) {
-            createRestaurantDto.admin_id = req.user.userId
-        }
-        return this.restaurantsService.create(createRestaurantDto)
+    @Roles(UserRole.CLIENT)
+    create(@Body() dto: CreateRestaurantDto, @User('id') userId: string) {
+      return this.restaurantService.createRestaurant(userId, dto);
     }
 
-    @Get()
-    @Roles(UserRole.ADMIN, UserRole.ADMIN, UserRole.CLIENT)
-    findAll() {
-        return this.restaurantsService.findAll()
-    }
-
-    @Get('my-restaurant')
-    @Roles(UserRole.ADMIN)
-    findMyRestaurant(@Request() req) {
-        return this.restaurantsService.findByAdminId(req.user.userId)
+    @Put(':id/opening-hours')
+    updateOpeningHours(
+      @Param('id', ParseUUIDPipe) id: string,
+      @User('id') userId: string,
+      @Body() hours: SetOpeningHoursDto[],
+    ) {
+      return this.restaurantService.setOpeningHours(
+        id,
+        hours
+      );
     }
 
     @Get(':id')
-    @Roles(UserRole.ADMIN, UserRole.ADMIN, UserRole.CLIENT)
-    findOne(@Param('id') id: string) {
-        return this.restaurantsService.findOne(id)
+    getOne(@Param('id', ParseUUIDPipe) id: string) {
+      return this.restaurantService.getRestaurantWithUsers(id);
     }
-
-    @Patch(':id')
-    @Roles(UserRole.ADMIN, UserRole.ADMIN)
-    async update(
-        @Param('id') id: string,
-        @Body() updateRestaurantDto: UpdateRestaurantDto,
-        @Request() req,
+  
+    @Get('user/:userId')
+    getByUser(@Param('userId', ParseUUIDPipe) userId: string) {
+      return this.restaurantService.getUserRestaurants(userId);
+    }
+  
+    @Post(':id/users/:userId')
+    addUser(
+      @Param('id', ParseUUIDPipe) restaurantId: string,
+      @Param('userId', ParseUUIDPipe) userId: string,
     ) {
-        // Check if user has permission to update this restaurant
-        if (req.user.role === UserRole.ADMIN) {
-            const restaurant = await this.restaurantsService.getRestaurantByAdmin(req.user.userId)
-            if (!restaurant || restaurant.id !== id) {
-                throw new ForbiddenException('You can only update your own restaurant')
-            }
-        }
-
-        return this.restaurantsService.update(id, updateRestaurantDto)
+      return this.restaurantService.addUserToRestaurant(
+        restaurantId,
+        userId,
+      );
     }
-
-    @Delete(':id')
-    @Roles(UserRole.ADMIN, UserRole.ADMIN)
-    async remove(@Param('id') id: string, @Request() req) {
-        // Check if user has permission to delete this restaurant
-        if (req.user.role === UserRole.ADMIN) {
-            const restaurant = await this.restaurantsService.getRestaurantByAdmin(req.user.userId)
-            if (!restaurant || restaurant.id !== id) {
-                throw new ForbiddenException('You can only delete your own restaurant')
-            }
-        }
-
-        return this.restaurantsService.remove(id)
+  
+    @Delete(':id/users/:userId')
+    removeUser(
+      @Param('id', ParseUUIDPipe) restaurantId: string,
+      @Param('userId', ParseUUIDPipe) userId: string,
+    ) {
+      return this.restaurantService.removeUserFromRestaurant(
+        restaurantId,
+        userId,
+      );
     }
-}
+  }
+  
