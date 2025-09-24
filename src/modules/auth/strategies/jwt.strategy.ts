@@ -15,7 +15,8 @@ export class JwtAccessStrategy extends PassportStrategy(Strategy, 'jwt-access') 
         },
       ]),
       ignoreExpiration: false,
-      secretOrKey: configService.get<string>('JWT_ACCESS_SECRET'),
+      secretOrKey: configService.get<string>('JWT_ACCESS_TOKEN_SECRET'),
+      algorithms: [configService.get<string>('JWT_ALGO')],
     });
   }
 
@@ -37,7 +38,8 @@ export class JwtRefreshStrategy extends PassportStrategy(Strategy, 'jwt-refresh'
         },
       ]),
       ignoreExpiration: false,
-      secretOrKey: configService.get<string>('JWT_REFRESH_SECRET'),
+      secretOrKey: configService.get<string>('JWT_REFRESH_TOKEN_SECRET'),
+      algorithms: [configService.get<string>('JWT_ALGO')],
     });
   }
 

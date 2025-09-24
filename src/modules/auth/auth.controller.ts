@@ -8,14 +8,23 @@ import { User } from './decorators/user.decorator'
 
 @Controller('auth')
 export class AuthController {
+    private readonly sameSite: string
+    private readonly secure: boolean
+    private readonly access_token_expiry: number
+    private readonly refresh_token_expiry: number
+
     constructor(
         private readonly authService: AuthService,
-        private readonly config: ConfigService,
-    ) {}
+        private readonly configService: ConfigService,
+    ) {
+        this.sameSite = this.configService.get<string>('COOKIES_SAME_SITE')!
+        this.secure = this.configService.get('COOKIES_SECURE')!
+        this.access_token_expiry = this.configService.get('JWT_ACCESS_TOKEN_EXPIRY')! * 1000
+        this.refresh_token_expiry = this.configService.get('JWT_REFRESH_TOKEN_EXPIRY')! * 1000
+    }
 
     @Post('register')
     async register(@Body() createUserDto: CreateUserDto) {
-        console.log(createUserDto)
         return this.authService.register(createUserDto)
     }
 
@@ -27,18 +36,16 @@ export class AuthController {
         const { data, access_token, refresh_token } = await this.authService.login(LoginUserDto);
         res.cookie('access_token', access_token, {
             httpOnly: true,
-            secure: true,
-            // sameSite: this.config.get<string>('SAME_SITE'),
-            sameSite: 'none',
-            maxAge: this.config.get<number>('JWT_ACCESS_EXPIRY'),
+            secure: this.secure,
+            sameSite: this.sameSite,
+            maxAge: this.access_token_expiry
         });
 
         res.cookie('refresh_token', refresh_token, {
             httpOnly: true,
-            secure: true,
-            // sameSite: this.config.get<string>('SAME_SITE'),
-            sameSite: 'none',
-            maxAge: this.config.get<number>('JWT_REFRESH_EXPIRY'),
+            secure: this.secure,
+            sameSite: this.sameSite,
+            maxAge: this.refresh_token_expiry
         });
         return data
     }
@@ -50,18 +57,13 @@ export class AuthController {
         @User() user,
         @Res({passthrough: true}) res,
     ) {
-        console.log('entered')
         const access_token = await this.authService.refresh(user.id)
-        console.log('access_token', access_token)
         res.cookie('access_token', access_token, {
             httpOnly: true,
-            secure: true,
-            // sameSite: this.config.get<string>('SAME_SITE'),
-            sameSite: 'none',
-            maxAge: this.config.get<number>('JWT_REFRESH_EXPIRY'),
+            secure: this.secure,
+            sameSite: this.sameSite,
+            maxAge: this.access_token_expiry
         });
-        console.log('refreshed')
       return
     }
-
 }

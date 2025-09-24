@@ -48,16 +48,16 @@ export class AuthService {
     async genAccessToken(userId: string, role: UserRole) {
         const payload = { sub: userId, role};
         return this.jwtService.signAsync(payload, {
-            secret: this.config.get<string>('JWT_ACCESS_SECRET'),
-            expiresIn: this.config.get<string>('JWT_ACCESS_EXPIRY'),
+            secret: this.config.get<string>('JWT_ACCESS_TOKEN_SECRET'),
+            expiresIn: this.config.get<string>('JWT_ACCESS_TOKEN_EXPIRY'),
         });
     }
 
     async genRefreshToken(userId: string, role: UserRole) {
         const payload = { sub: userId, role};
         return this.jwtService.signAsync(payload, {
-            secret: this.config.get<string>('JWT_REFRESH_SECRET'),
-            expiresIn: this.config.get<string>('JWT_REFRESH_EXPIRY'),
+            secret: this.config.get<string>('JWT_REFRESH_TOKEN_SECRET'),
+            expiresIn: this.config.get<string>('JWT_REFRESH_TOKEN_EXPIRY'),
         });
     }
 

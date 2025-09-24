@@ -5,18 +5,14 @@ import { PaymentStrategy, PaymentResponse, PaymentVerificationResponse, PaymentS
 
 @Injectable()
 export class GuidiniPayStrategy implements PaymentStrategy {
-  private readonly baseUrl?: string;
-  private readonly appKey?: string;
-  private readonly appSecret?: string;
+  private readonly baseUrl: string;
+  private readonly appKey: string;
+  private readonly appSecret: string;
 
-  constructor(private configService: ConfigService) {
-    this.baseUrl = this.configService.get<string>('GUIDINI_API_URL')
-    this.appKey = this.configService.get<string>('GUIDINI_APP_KEY');
-    this.appSecret = this.configService.get<string>('GUIDINI_SECRET');
-    
-    if (!this.appKey || !this.appSecret) {
-      throw new Error('GuidiniPay credentials are not configured');
-    }
+  constructor(configService: ConfigService) {
+    this.baseUrl = configService.get<string>('GUIDINI_API_URL')!
+    this.appKey = configService.get<string>('GUIDINI_ APP_KEY',)!
+    this.appSecret = configService.get<string>('GUIDINI_SECRET')!
   }
 
   async initiatePayment(amount: number, currency: string = 'DZD', metadata?: any): Promise<PaymentResponse> {

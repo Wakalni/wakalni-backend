@@ -8,7 +8,7 @@ import { OrderModule } from '../order/order.module';
 @Module({
   imports: [
     HttpModule,
-    forwardRef(() => OrderModule)
+    forwardRef(() => OrderModule),
   ],
   controllers: [PaymentController],
   providers: [
