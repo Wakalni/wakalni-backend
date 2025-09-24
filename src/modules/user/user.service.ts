@@ -37,9 +37,6 @@ export class UserService {
         return user
     }
 
-    async findByEmail(email: string): Promise<User | null> {
-        return this.usersRepository.findOne({ where: { email } })
-    }
 
     async findByPhone(phone: string): Promise<User | null> {
         return this.usersRepository.findOne({ where: { phone } })
@@ -65,14 +62,11 @@ export class UserService {
         if (result.affected === 0) throw new BadRequestException(`Erroor occurred`)
     }
 
-    async findOneByCredentials(email: string, password: string): Promise<User> {
-        const user = await this.usersRepository.findOne({
-            where: { email},
-        })
-        console.log("user:", user);
-        if (!user) throw new UnauthorizedException('Invalid credentials')
-        const passwordMatched = await bcrypt.compare(password, user.password)
-        if (!passwordMatched) throw new UnauthorizedException('Invalid credentials')
-        return user
+    async find(id: string): Promise<User | null> {
+        return this.usersRepository.findOne({ where: { id } })
+    }
+
+    async findByEmail(email: string): Promise<User | null> {
+        return this.usersRepository.findOne({ where: { email } })
     }
 }

@@ -14,14 +14,14 @@ import { RestaurantService } from './restaurant.service';
 import { CreateRestaurantDto } from './dto/create-restaurant.dto';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { UserRole } from '../user/enums/user-role.enum';
-import { JwtGuard } from '../auth/guards/jwt-auth.guard';
+import { JwtAccessGuard } from '../auth/guards/jwt-access-guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { User } from '../auth/decorators/user.decorator';
 import { SetOpeningHoursDto } from './dto/set-opening-hours.dto';
 import { SetOpenedStatus } from './dto/set-opened-status.dto';
   
   @Controller('restaurants')
-  @UseGuards(JwtGuard, RolesGuard)
+  @UseGuards(JwtAccessGuard, RolesGuard)
   export class RestaurantController {
     constructor(private readonly restaurantService: RestaurantService) {}
   

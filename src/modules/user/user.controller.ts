@@ -1,13 +1,13 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common'
 import { UserService } from './user.service'
 import { UpdateUserDto, UpdateUserPasswordDto } from './dto/update-user.dto'
-import { JwtGuard } from '../auth/guards/jwt-auth.guard'
+import { JwtAccessGuard } from '../auth/guards/jwt-access-guard'
 import { RolesGuard } from '../auth/guards/roles.guard'
 import { Roles } from '../auth/decorators/roles.decorator'
 import { UserRole } from './enums/user-role.enum'
 
 @Controller('users')
-@UseGuards(JwtGuard, RolesGuard)
+@UseGuards(JwtAccessGuard, RolesGuard)
 export class UserController {
     constructor(private readonly usersService: UserService) {}
 

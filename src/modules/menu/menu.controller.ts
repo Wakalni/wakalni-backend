@@ -18,13 +18,13 @@ import { CreateMenuItemDto } from './dto/create-menu-item.dto'
 import { UpdateMenuItemDto } from './dto/update-menu-item.dto'
 import { CreateRecipeDto } from './dto/create-recipe.dto'
 import { UpdateRecipeDto } from './dto/update-recipe.dto'
-import { JwtGuard } from '../auth/guards/jwt-auth.guard'
+import { JwtAccessGuard } from '../auth/guards/jwt-access-guard'
 import { RolesGuard } from '../auth/guards/roles.guard'
 import { Roles } from '../auth/decorators/roles.decorator'
 import { UserRole } from '../user/enums/user-role.enum'
 
 @Controller('menus')
-@UseGuards(JwtGuard, RolesGuard)
+@UseGuards(JwtAccessGuard, RolesGuard)
 export class MenuController {
     constructor(private readonly menuService: MenuService) {}
 

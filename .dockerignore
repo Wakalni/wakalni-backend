@@ -5,6 +5,9 @@ dist/
 data/
 
 .env
+.env.dev
+.env.prod
+.env.test
 .gitignore
 .dockerignore
 npm-debug.log

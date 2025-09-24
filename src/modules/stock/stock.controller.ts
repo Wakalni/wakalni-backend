@@ -15,14 +15,14 @@ import { CreateStockItemDto } from './dto/create-stock.dto';
 import { UpdateStockItemDto } from './dto/update-stock.dto';
 import { AdjustStockDto } from './dto/adjust-stock.dto';
 import { StockReportDto } from './dto/stock-report.dto';
-import { JwtGuard } from '../auth/guards/jwt-auth.guard';
+import { JwtAccessGuard } from '../auth/guards/jwt-access-guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { UserRole } from '../user/enums/user-role.enum';
 import { NotFoundException } from '@nestjs/common'
 
 @Controller('stock')
-@UseGuards(JwtGuard, RolesGuard)
+@UseGuards(JwtAccessGuard, RolesGuard)
 export class StockController {
   constructor(private readonly stockService: StockService) {}
 

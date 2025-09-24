@@ -12,7 +12,7 @@ import {
 import { OrderService } from './order.service'
 import { CreateOrderDto } from './dto/create-order.dto'
 import { UpdateOrderDto } from './dto/update-order.dto'
-import { JwtGuard } from '../auth/guards/jwt-auth.guard'
+import { JwtAccessGuard } from '../auth/guards/jwt-access-guard'
 import { RolesGuard } from '../auth/guards/roles.guard'
 import { Roles } from '../auth/decorators/roles.decorator'
 import { UserRole } from '../user/enums/user-role.enum'
@@ -20,7 +20,7 @@ import { OrderStatus } from './entities/order.entity'
 import { NotFoundException } from '@nestjs/common'
 
 @Controller('orders')
-@UseGuards(JwtGuard, RolesGuard)
+@UseGuards(JwtAccessGuard, RolesGuard)
 export class OrderController {
     constructor(private readonly orderService: OrderService) {}
 

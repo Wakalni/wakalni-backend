@@ -14,13 +14,13 @@ import {
 import { IngredientsService } from './ingredient.service'
 import { CreateIngredientDto } from './dto/create-ingredient.dto'
 import { UpdateIngredientDto } from './dto/update-ingredient.dto'
-import { JwtGuard } from '../auth/guards/jwt-auth.guard'
+import { JwtAccessGuard } from '../auth/guards/jwt-access-guard'
 import { RolesGuard } from '../auth/guards/roles.guard'
 import { Roles } from '../auth/decorators/roles.decorator'
 import { UserRole } from '../user/enums/user-role.enum'
 
 @Controller('ingredients')
-@UseGuards(JwtGuard, RolesGuard)
+@UseGuards(JwtAccessGuard, RolesGuard)
 export class IngredientsController {
     constructor(private readonly ingredientsService: IngredientsService) {}
 
