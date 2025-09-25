@@ -71,7 +71,6 @@ export class PaymentController {
 
   @Post('webhook/guidini')
   async handleGuidiniWebhook(@Body() webhookData: any) {
-    console.log('GuidiniPay webhook received:', webhookData);
     return { received: true };
   }
 }

@@ -10,7 +10,7 @@ services:
     ports:
       - "${DB_PORT}:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - caravan_postgres_data:/var/lib/postgresql/data
     networks:
       - caravan-network
     restart: unless-stopped
@@ -32,7 +32,7 @@ services:
       postgres:
         condition: service_healthy
     volumes:
-      - backend_logs:/usr/src/app/logs
+      - caravan_backend_logs:/usr/src/app/logs
       - /usr/src/app/node_modules
     networks:
       - caravan-network
@@ -64,7 +64,7 @@ services:
       - "8080:80"
       - "443:443"
     volumes:
-      - nginx_logs:/var/log/nginx
+      - caravan_nginx_logs:/var/log/nginx
       - ./nginx/nginx.conf.template:/etc/nginx/templates/nginx.conf.template:ro
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
     networks:
@@ -72,9 +72,9 @@ services:
     restart: unless-stopped
 
 volumes:
-  postgres_data:
-  backend_logs:
-  nginx_logs:
+  caravan_postgres_data:
+  caravan_backend_logs:
+  caravan_nginx_logs:
 
 networks:
   caravan-network:

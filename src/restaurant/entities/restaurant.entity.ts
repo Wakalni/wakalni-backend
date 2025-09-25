@@ -7,10 +7,10 @@ import {
     OneToMany,
 } from 'typeorm'
 import { OpeningHours } from './opening-hours.entity'
-import { Ingredient } from 'src/modules/ingredient/entities/ingredient.entity'
+import { Ingredient } from 'src/ingredient/entities/ingredient.entity'
 import { Menu } from '../../menu/entities/menu.entity'
 import { Order } from '../../order/entities/order.entity'
-import { StockItem } from 'src/modules/stock/entities/stock.entity'
+import { StockItem } from 'src/stock/entities/stock.entity'
 import { RestaurantOwnership } from './restaurant-ownership.entity'
 
 @Entity('restaurants')

@@ -1,13 +1,13 @@
 import { Module } from '@nestjs/common'
 import { TypeOrmModule } from '@nestjs/typeorm'
-import { UserModule } from './modules/user/user.module'
-import { AuthModule } from './modules/auth/auth.module'
-import { RestaurantModule } from './modules/restaurant/restaurant.module'
+import { UserModule } from './user/user.module'
+import { AuthModule } from './auth/auth.module'
+import { RestaurantModule } from './restaurant/restaurant.module'
 import { TypeOrmModuleOptions } from '@nestjs/typeorm'
-import { IngredientsModule } from './modules/ingredient/ingredient.module'
-import { MenuModule } from './modules/menu/menu.module'
-import { OrderModule } from './modules/order/order.module'
-import { PaymentModule } from './modules/payment/payment.module';
+import { IngredientsModule } from './ingredient/ingredient.module'
+import { MenuModule } from './menu/menu.module'
+import { OrderModule } from './order/order.module'
+import { PaymentModule } from './payment/payment.module';
 import { AppController } from './app.controller'
 import { AppService } from './app.service'
 import { ConfigModule, ConfigService } from '@nestjs/config'
@@ -73,7 +73,6 @@ import Joi from 'joi'
             imports: [],
             inject: [ConfigService],
             useFactory: (configService: ConfigService) => {
-                console.log(configService)
                 const dbconfig: TypeOrmModuleOptions = {
                     type: 'postgres',
                     host: configService.get<string>('DB_HOST'),

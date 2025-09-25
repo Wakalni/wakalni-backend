@@ -1,12 +1,13 @@
 map $http_origin $cors_origin {
     default "";
+    "~^http://localhost:8000$"        $http_origin;
     "~^http://vercel\.easyDine\.com$"        $http_origin;
 }
 
 server {
     listen 80;
     server_name localhost;
-    limit_req zone=mylimit burst=3 nodelay;
+    limit_req zone=mylimit burst=6 nodelay;
     
     location / {
         add_header 'Access-Control-Allow-Origin' "$http_origin" always;
@@ -43,7 +44,7 @@ server {
     add_header X-XSS-Protection "1; mode=block" always;
     add_header Referrer-Policy "strict-origin" always;
 
-    limit_req zone=mylimit burst=3 nodelay;
+    limit_req zone=mylimit burst=6 nodelay;
     client_max_body_size 100M;
     
     location / {

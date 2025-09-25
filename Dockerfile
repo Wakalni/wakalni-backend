@@ -20,4 +20,4 @@ RUN rm -rf src/
 
 EXPOSE 8000
 
-CMD ["yarn", "start:prod"]
+CMD ["node", "."]

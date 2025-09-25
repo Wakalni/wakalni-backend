@@ -9,7 +9,7 @@ import {
 import { UserRole } from '../enums/user-role.enum'
 import { Order } from '../../order/entities/order.entity'
 import { StockAdjustment } from '../../stock/entities/stock-adjustement.entity'
-import { RestaurantOwnership } from 'src/modules/restaurant/entities/restaurant-ownership.entity'
+import { RestaurantOwnership } from 'src/restaurant/entities/restaurant-ownership.entity'
 
 @Entity('users')
 export class User {
