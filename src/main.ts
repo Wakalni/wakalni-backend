@@ -4,9 +4,11 @@ import { NestExpressApplication } from '@nestjs/platform-express'
 import { ConfigService } from '@nestjs/config';
 import cookieParser from 'cookie-parser';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { ResponseLoggingInterceptor } from './common/logger';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule)
+  app.useGlobalInterceptors(new ResponseLoggingInterceptor());
   app.set('query parser', 'extended')
   app.use(cookieParser())
   const configService = app.get(ConfigService);
