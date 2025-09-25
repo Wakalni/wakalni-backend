@@ -5,7 +5,6 @@ import { User } from './entities/user.entity'
 import { CreateUserDto } from './dto/create-user.dto'
 import { UpdateUserDto, UpdateUserPasswordDto } from './dto/update-user.dto'
 import * as bcrypt from 'bcrypt'
-import { UnauthorizedException } from '@nestjs/common/exceptions'
 
 @Injectable()
 export class UserService {

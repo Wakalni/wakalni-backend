@@ -16,8 +16,8 @@ COPY . .
 
 RUN yarn build
 
-EXPOSE 8000
-
 RUN rm -rf src/
+
+EXPOSE 8000
 
 CMD ["yarn", "start:prod"]
